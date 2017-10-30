@@ -105,7 +105,7 @@ public static void clickThis(Location loc, int clickType) {
 	}
 }
 public static void fish() {
-	//fishingMethodArray
+	delayTime(500);
 	while(true) {
 		for(int i = 0; i < numFishingSpotImages; ++i) {
 			String tmpName = "fish_spot" + i + ".jpg";
@@ -158,11 +158,18 @@ static int avgCtTotal = 0;
 public static void startFishing() {
 	dropInventory(dropItemArray);
 	fish();
-	delayTime(500);
+	long lastFishTime = System.currentTimeMillis();
 	int i = 0;
 	int stillCount = 3;
 	while (characterRegion.isObserving()) { // do something while observe is running
 		characterRegion.wait(0.2);
+		long elapsedFishTime = (System.currentTimeMillis() - lastFishTime)/1000000;
+		System.currentTimeMillis();
+		//if 30 seconds since last fish time, call fish() as backup measure
+		if(elapsedFishTime >= 30) {
+			fish();
+			lastFishTime = System.currentTimeMillis();
+		}
 		if (i % 15 == 14) {
 			double avg = avgCt/avgCtTotal;
 			System.out.println(avg);
@@ -172,7 +179,7 @@ public static void startFishing() {
 				if(stillCount >= 3) {
 					dropInventory(dropItemArray);
 					fish();
-					delayTime(500);
+					lastFishTime = System.nanoTime();
 				}
 				++stillCount;
 			}
