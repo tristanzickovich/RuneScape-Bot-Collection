@@ -7,15 +7,15 @@ public static final int LEFT_CLICK = 0;
 public static final int RIGHT_CLICK = 1;
 //global arrays
 static inventoryItem[] dropItemArray = {new inventoryItem("raw_shrimp.jpg",Key.NUM1,0.93),
-	new inventoryItem("raw_anchovie.jpg",Key.NUM2,0.93), new inventoryItem("raw_tuna.jpg",Key.NUM3,0.75),
+	new inventoryItem("raw_anchovie.jpg",Key.NUM2,0.91), new inventoryItem("raw_tuna.jpg",Key.NUM3,0.75),
 	new inventoryItem("raw_lobster.jpg",Key.NUM4,0.75)};
-static String[] fishingMethodArray = {"harpoon_fishing.jpg", "net_fishing.jpg", "cage_fishing.jpg"};
+static String[] fishingMethodArray = {"net_fishing.jpg", "cage_fishing.jpg"};
 //global elements
 static Region backpackRegion;
 static Region characterRegion;
 static Region fishingRegion;
 static int numFishingSpotImages = 7;
-static double activityThreshold = 29;
+static double activityThreshold = 42;
 public static void findLast(Iterator<Match> elementGroup) {
 	Screen s = new Screen();
 	try {
@@ -61,11 +61,13 @@ public static List<Match> searchRegionAll(Region curRegion, String item, double 
 	}
 	return null;
 }
-public static Match searchRegionOne(Region curRegion, String item) {
+public static Match searchRegionOne(Region curRegion, String item, double similarity) {
 	String img_path = "images/" + item;
 	try {
 		Match t = curRegion.find(img_path);
-		return t;
+		if(t.getScore() > similarity) {
+			return t;
+		}
 	} catch (FindFailed e) {
 		e.printStackTrace();
 	}
@@ -107,22 +109,19 @@ public static void fish() {
 	while(true) {
 		for(int i = 0; i < numFishingSpotImages; ++i) {
 			String tmpName = "fish_spot" + i + ".jpg";
-			Match spot = searchRegionOne(fishingRegion, tmpName);
+			Match spot = searchRegionOne(fishingRegion, tmpName, .75);
 			if(spot != null) {
 				Location loc = spot.getTarget();
 				clickThis(loc, RIGHT_CLICK);
-				delayTime(100);
+				delayTime(200);
 				for(int j = 0; j < fishingMethodArray.length; ++j) {
-					Match fishingType = searchRegionOne(fishingRegion, fishingMethodArray[j]);
+					Match fishingType = searchRegionOne(fishingRegion, fishingMethodArray[j], .90);
 					if(fishingType != null) {
 						Location type = fishingType.getTarget();
 						clickThis(type, LEFT_CLICK);
 						return;
 					}
 				}
-			}
-			else {
-				System.out.print("none");
 			}
 		}
 	}
@@ -159,19 +158,21 @@ static int avgCtTotal = 0;
 public static void startFishing() {
 	dropInventory(dropItemArray);
 	fish();
+	delayTime(500);
 	int i = 0;
 	int stillCount = 3;
 	while (characterRegion.isObserving()) { // do something while observe is running
-		characterRegion.wait(0.3);
-		if (i % 10 == 9) {
+		characterRegion.wait(0.2);
+		if (i % 15 == 14) {
 			double avg = avgCt/avgCtTotal;
 			System.out.println(avg);
 			if(avg < activityThreshold) {
 				//if not fishing
 				System.out.println("Probably Still");
-				if(stillCount > 2) {
+				if(stillCount >= 3) {
 					dropInventory(dropItemArray);
 					fish();
+					delayTime(500);
 				}
 				++stillCount;
 			}
@@ -191,11 +192,11 @@ public static void main(String[] args) {
 	//find / initialize backpack region
 	backpackRegion = findBackpack();
 	//initialize character region
-	characterRegion = defineCharacterRegion(15,40);
+	characterRegion = defineCharacterRegion(30,60);
 	fishingRegion = defineObservationRegion(700, 350);
-	fishingRegion.highlight(1);
+	//fishingRegion.highlight(1);
 	//characterRegion.getCenter().click();
-	characterRegion.highlight(1);
+	//characterRegion.highlight(1);
 	characterRegion.onChange(new ObserverCallBack(){ // define the handler
 		@Override
 		public void changed(ObserveEvent evt) {
@@ -210,11 +211,11 @@ public static void main(String[] args) {
 	});
 	characterRegion.observeInBackground(); // start observation in background forever
 	startFishing();
-	//Test Code
+	//Test Code front: fishing: 35-48, still: 25-32,  side: still 38-41, Fishing;  40-48 (46)
 	/*int i = 0;
 	while (characterRegion.isObserving()) {
-		characterRegion.wait(0.3);
-		if(i % 10 == 9) {
+		characterRegion.wait(0.2);
+		if(i % 15 == 14) {
 			double avg = avgCt/avgCtTotal;
 			System.out.println(avg);
 			avgCtTotal = 0;
