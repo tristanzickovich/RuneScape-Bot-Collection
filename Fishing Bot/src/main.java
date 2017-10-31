@@ -81,7 +81,8 @@ public static void keyPress(String key) {
 }
 public static void delayTime(int ms) {
 	try{
-		Thread.sleep(ms);
+		int offset = new Random().nextInt(100) + 1;
+		Thread.sleep(ms + offset);
 	} catch(InterruptedException x){ 
 	}
 }
