@@ -15,35 +15,8 @@ static Region backpackRegion;
 static Region characterRegion;
 static Region fishingRegion;
 static int numFishingSpotImages = 7;
-static double activityThreshold = 42;
-public static void findLast(Iterator<Match> elementGroup) {
-	Screen s = new Screen();
-	try {
-		Location lastElem = new Location(0,0);
-		while(elementGroup.hasNext()) {
-			//s.click(t.next());
-			Match temp = elementGroup.next();
-			Location tmp = temp.getTarget();
-			System.out.printf("%s \n", tmp);
-			if(tmp.y > lastElem.y || (tmp.y == lastElem.y && tmp.x > lastElem.x)) {
-				lastElem = tmp;
-			}
-		}
-		s.click(lastElem);
-	} catch (FindFailed e) {
-		e.printStackTrace();
-	}
-}
-public static int iteratorSize(Iterator<Match> it) {
-	int i = 0;
-	while(it.hasNext()) {
-		i++;
-		Match x = it.next();
-		System.out.println(x);
-	}
-	System.out.println("returned");
-	return i;
-}
+static double activityThreshold = 43;
+
 public static List<Match> searchRegionAll(Region curRegion, String item, double similarity) {
 	String img_path = "images/" + item;
 	try {
@@ -114,12 +87,13 @@ public static void fish() {
 			if(spot != null) {
 				Location loc = spot.getTarget();
 				clickThis(loc, RIGHT_CLICK);
-				delayTime(200);
+				delayTime(500);
 				for(int j = 0; j < fishingMethodArray.length; ++j) {
-					Match fishingType = searchRegionOne(fishingRegion, fishingMethodArray[j], .90);
+					Match fishingType = searchRegionOne(fishingRegion, fishingMethodArray[j], .85);
 					if(fishingType != null) {
 						Location type = fishingType.getTarget();
 						clickThis(type, LEFT_CLICK);
+						delayTime(1000);
 						return;
 					}
 				}
@@ -164,10 +138,10 @@ public static void startFishing() {
 	int stillCount = 3;
 	while (characterRegion.isObserving()) { // do something while observe is running
 		characterRegion.wait(0.2);
-		long elapsedFishTime = (System.currentTimeMillis() - lastFishTime)/1000000;
-		System.currentTimeMillis();
+		long elapsedFishTime = (System.currentTimeMillis() - lastFishTime)/1000;
 		//if 30 seconds since last fish time, call fish() as backup measure
 		if(elapsedFishTime >= 30) {
+			dropInventory(dropItemArray);
 			fish();
 			lastFishTime = System.currentTimeMillis();
 		}
@@ -180,7 +154,7 @@ public static void startFishing() {
 				if(stillCount >= 3) {
 					dropInventory(dropItemArray);
 					fish();
-					lastFishTime = System.nanoTime();
+					lastFishTime = System.currentTimeMillis();
 				}
 				++stillCount;
 			}
