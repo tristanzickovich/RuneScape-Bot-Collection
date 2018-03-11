@@ -8,15 +8,14 @@ import org.powerbot.script.rt6.Item;
 import java.util.ArrayList;
 
 public class Drop extends Task<ClientContext>{
-    private int fishIds[] = {377, 371, 317, 321, 359};
-    //private List<int[]> fishIds = Arrays.asList(new int[]{377, 371, 317, 321, 359});
     public Drop(ClientContext ctx) {
         super(ctx);
     }
 
     @Override
     public boolean activate() {
-        return ctx.backpack.select().count() >= 28;
+        return ctx.backpack.select().count() >= 28
+                && !ctx.chat.chatting();
     }
 
     public static boolean contains(final int[] array, final int v){
