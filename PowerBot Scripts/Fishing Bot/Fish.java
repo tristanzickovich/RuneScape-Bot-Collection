@@ -8,7 +8,6 @@ import java.util.concurrent.Callable;
 
 public class Fish extends Task<ClientContext> {
     private int[] fishSpotIds = {323,324};
-    private int[] fishIds = {377, 371, 317, 321, 359};
     static int stillCounter = 0;
 
     public Fish(ClientContext ctx) {

@@ -16,7 +16,7 @@ public class Drop extends Task<ClientContext>{
 
     @Override
     public boolean activate() {
-        return ctx.backpack.select().count() > 25;
+        return ctx.backpack.select().count() >= 28;
     }
 
     public static boolean contains(final int[] array, final int v){

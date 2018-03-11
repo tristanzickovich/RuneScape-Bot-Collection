@@ -15,7 +15,7 @@ public class main extends PollingScript<ClientContext>{
 
     @Override
     public void start(){
-        taskList.addAll(Arrays.asList(new Fish(ctx), new Drop(ctx)));
+        taskList.addAll(Arrays.asList(new dismissDialogue(ctx), new Fish(ctx), new Drop(ctx)));
     }
 
     @Override
