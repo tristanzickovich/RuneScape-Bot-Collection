@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 public class UI extends JFrame implements ItemListener {
     private ArrayList<String> chosenMethods = new ArrayList<String>();
+    public boolean isRunning = false;
     public UI(){
         //set up UI layout
         setLayout(new GridBagLayout());
         setTitle("Test UI");
         setSize(300,200);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
         GridBagConstraints gc = new GridBagConstraints();
         //create UI checkboxes
         final String[] fishingMethods = {"Harpoon", "Cage", "Net"};
@@ -30,23 +30,25 @@ public class UI extends JFrame implements ItemListener {
         }
         JButton startButton= new JButton("Start");
         startButton.addActionListener((ActionEvent) -> {
-            System.out.println("start clicked");
+            System.out.println(chosenMethods);
+            isRunning = true;
         });
         gc.gridx = 0;
         gc.gridy = methodCheckBoxes.length;
         add(startButton, gc);
-        /*
-        JButton quit = new JButton("Quit");
-        quit.addActionListener((ActionEvent event) -> {
-            System.exit(0);
+
+        JButton stopButton = new JButton("Stop");
+        stopButton.addActionListener((ActionEvent event) -> {
+            isRunning = false;
         });
-        */
+        gc.gridx = 1;
+        gc.gridy = methodCheckBoxes.length;
+        add(stopButton, gc);
     }
 
     public static void main(String[] args){
         EventQueue.invokeLater(() -> {
-            UI ex = new UI();
-            ex.setVisible(true);
+            new UI().setVisible(true);
         });
     }
 
@@ -60,6 +62,5 @@ public class UI extends JFrame implements ItemListener {
         else{
             chosenMethods.remove(check.getText());
         }
-        System.out.println(chosenMethods);
     }
 }
