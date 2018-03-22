@@ -8,14 +8,22 @@ import org.powerbot.script.rt6.Item;
 import java.util.ArrayList;
 
 public class Drop extends Task<ClientContext>{
+    static int stillCounter = 0;
     public Drop(ClientContext ctx) {
         super(ctx);
     }
 
     @Override
     public boolean activate() {
+        if(ctx.players.local().animation() == -1){
+           stillCounter++;
+        }
+        else{
+            stillCounter = 0;
+        }
         return ctx.backpack.select().count() >= 28
-                && !ctx.chat.chatting();
+                && !ctx.chat.chatting()
+                && stillCounter >= 3;
     }
 
     public static boolean contains(final int[] array, final int v){

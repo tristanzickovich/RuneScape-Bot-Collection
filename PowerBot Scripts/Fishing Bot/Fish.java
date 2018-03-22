@@ -4,22 +4,25 @@ import org.powerbot.script.Condition;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Npc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 public class Fish extends Task<ClientContext> {
     private List<Integer> fishSpotIds = new ArrayList<Integer>();
     private List<String> fishMethods = new ArrayList<String>();
+    private static Map<String, Integer> methodMapping = new HashMap<String,Integer>();
+    static{
+        methodMapping.put("Cage", 324);
+        methodMapping.put("Harpoon", 324);
+        methodMapping.put("Net", 323);
+    }
     static int stillCounter = 0;
 
-    public Fish(ClientContext ctx) {
+    public Fish(ClientContext ctx, ArrayList<String> chosenMethods) {
         super(ctx);
-        addFishMethod("Cage", 324);
-        addFishMethod("Harpoon", 324);
-        //addFishMethod("Net", 323);
+        for(String s : chosenMethods){
+            addFishMethod(s, methodMapping.get(s));
+        }
     }
 
     @Override

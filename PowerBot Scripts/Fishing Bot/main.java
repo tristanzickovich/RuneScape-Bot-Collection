@@ -12,14 +12,20 @@ import java.util.concurrent.TimeUnit;
 @Script.Manifest(name="fish and drop", description="fishes and drops", properties="author=Me; topic=999; client=6")
 public class main extends PollingScript<ClientContext>{
     private List<Task> taskList = new ArrayList<Task>();
+    private ArrayList<String> chosenMethods = new ArrayList<String>();
     public UI ui;
     @Override
     public void start(){
-        taskList.addAll(Arrays.asList(new dismissDialogue(ctx), new Fish(ctx), new Drop(ctx)));
         ui = new UI();
+        initializeTaskList();
         ui.setVisible(true);
     }
-
+    private void initializeTaskList(){
+        chosenMethods.clear();
+        chosenMethods = (ArrayList<String>) ui.chosenMethods.clone();
+        taskList.clear();
+        taskList.addAll(Arrays.asList(new dismissDialogue(ctx), new Drop(ctx), new Fish(ctx, chosenMethods)));
+    }
     @Override
     public void stop(){
         System.out.println("stopped");
@@ -35,7 +41,10 @@ public class main extends PollingScript<ClientContext>{
     @Override
     public void poll() {
         //main loop
-        if(ui.isRunning) {
+        if(!Arrays.equals(chosenMethods.toArray(),ui.chosenMethods.toArray())){
+            initializeTaskList();
+        }
+        else {
             for (Task task : taskList) {
                 if (task.activate()) {
                     task.execute();
